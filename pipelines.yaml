@@ -10,6 +10,7 @@ stages:
       - job: BuildJob
         steps:
           - task: JavaToolInstaller@0
+            name: SetJava17 # Added a name to reference this task's output variables
             inputs:
               versionSpec: '17'
               jdkArchitectureOption: 'x64'
@@ -23,15 +24,7 @@ stages:
               effectivePomSkip: false
               sonarQubeRunAnalysis: false
               goals: 'clean package'
-
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)/target'
-              Contents: '*.jar'
-              TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-          - task: PublishBuildArtifacts@1
-            inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-              ArtifactName: 'drop'
-              publishLocation: 'Container'
+              # Force Maven to use the Java 17 environment variables provided by the installer
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.17'
+              jdkArchitectureOption: 'x64'
